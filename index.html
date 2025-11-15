@@ -34,44 +34,23 @@
   </head>
 
   <body>
-    <!-- Navigationsleiste -->
-    <nav id="navigationsleiste">
-      <a href="index.html"><span id="markenname">Liqui-Planner</span></a>
-    </nav>
+<section id="monatslisten">
+  <article class="monatsliste"></article>
+</section>
 
-    <!-- Monatslisten -->
-    <section id="monatslisten">
-      <!-- Monatsliste -->
-      <article class="monatsliste">
-        <!-- Titel -->
-        <!-- <h2>
-          <span class="monat-jahr">Februar 2020</span>
-          <span class="monatsbilanz negativ">-326,84€</span>
-        </h2> -->
-        <!-- Eintrags-Liste -->
-      </article>
-    </section>
-
-    <!-- Gesamtbilanz -->
-    <aside id="gesamtbilanz">
-      <h1>Gesamtbilanz</h1>
-      <div class="gesamtbilanz-zeile einnahmen">
-        <span>Einnahmen:</span><span>0,00€</span>
-      </div>
-      <div class="gesamtbilanz-zeile ausgaben">
-        <span>Ausgaben:</span><span>0,00€</span>
-      </div>
-      <div class="gesamtbilanz-zeile bilanz">
-        <span>Bilanz:</span><span class="positiv">0,00€</span>
-      </div>
-    </aside>
 
     <!-- Javascriptdatei des LiquiPlaners -->
-    <script src="./src/js/haushaltsbuch.js" defer></script>
-    <script src="./src/js/eingabeformular.js" defer></script>
+     <script src="./src/js/classes/Navigationsleiste.js" defer></script>
+     <script src="./src/js/classes/Eingabeformular.js" defer></script>
+     <script src="./src/js/classes/Fehler.js" defer></script>
+     <script src="./src/js/classes/Haushaltsbuch.js" defer></script>
+     <script src="./src/js/classes/Eintrag.js" defer></script>
+     <script src="./src/js/classes/Monatsliste.js" defer></script>
+     <script src="./src/js/classes/Monatslistensammlung.js" defer></script>
+     <script src="./src/js/classes/Gesamtbilanz.js" defer></script>
     <script src="./src/js/main.js" defer></script>
 
     <!-- Fontawesome -->
-    <script src="./src/fonts/fontawesome/all.min.js"></script>
+    <script src="./src/fonts/fontawesome/all.min.js" defer></script>
   </body>
 </html>
