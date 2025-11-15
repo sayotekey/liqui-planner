@@ -12,13 +12,21 @@ class Haushaltsbuch {
 
   // eine Funktion, die alle Methoden aufruft
   eintragHinzufuegen(formulardaten) {
-    let neuerEintrag = new Map();
-    neuerEintrag.set("titel", formulardaten.titel);
-    neuerEintrag.set("betrag", formulardaten.betrag);
-    neuerEintrag.set("typ", formulardaten.typ);
-    neuerEintrag.set("datum", formulardaten.datum);
-    neuerEintrag.set("timestamp", Date.now());
+    let neuerEintrag = new Eintrag(
+      formulardaten.titel,
+      formulardaten.betrag,
+      formulardaten.typ,
+      formulardaten.datum
+    );
+
+    // let neuerEintrag = new Map();
+    // neuerEintrag.set("titel", formulardaten.titel);
+    // neuerEintrag.set("betrag", formulardaten.betrag);
+    // neuerEintrag.set("typ", formulardaten.typ);
+    // neuerEintrag.set("datum", formulardaten.datum);
+    // neuerEintrag.set("timestamp", Date.now());
     this._eintraege.push(neuerEintrag);
+    console.log(this);
 
     // Methodenaufrufe anpassen
     this._eintraegeSortieren();
@@ -27,10 +35,10 @@ class Haushaltsbuch {
     this._gesamtbilanzAnzeigen();
   }
 
-  _eintragEntfernen(timestamp) {
+  eintragEntfernen(timestamp) {
     let startIndex;
     for (let i = 0; i < this._eintraege.length; i++) {
-      if (this._eintraege[i].get("timestamp") === parseInt(timestamp)) {
+      if (this._eintraege[i].timestamp() === parseInt(timestamp)) {
         startIndex = i;
         break;
       }
@@ -44,70 +52,12 @@ class Haushaltsbuch {
 
   _eintraegeSortieren() {
     this._eintraege.sort((eintragA, eintragB) => {
-      return eintragA.get("datum") > eintragB.get("datum")
+      return eintragA.datum() > eintragB.datum()
         ? -1
-        : eintragA.get("datum") < eintragB.get("datum")
+        : eintragA.datum() < eintragB.datum()
         ? 1
         : 0;
     });
-  }
-
-  _htmlEintragGenerieren(eintrag) {
-    let listenpunkt = document.createElement("li");
-    eintrag.get("typ") === "einnahme"
-      ? listenpunkt.setAttribute("class", "einnahme")
-      : listenpunkt.setAttribute("class", "ausgabe");
-
-    listenpunkt.setAttribute("data-timestamp", eintrag.get("timestamp"));
-
-    // datum-span
-    let datum = document.createElement("span");
-    datum.setAttribute("class", "datum");
-    datum.textContent = eintrag.get("datum").toLocaleDateString("de-DE", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-    listenpunkt.insertAdjacentElement("afterbegin", datum);
-
-    // titel-span
-    let titel = document.createElement("span");
-    titel.setAttribute("class", "titel");
-    titel.textContent = eintrag.get("titel");
-    datum.insertAdjacentElement("afterend", titel);
-
-    // betrag-span
-    let betrag = document.createElement("span");
-    betrag.setAttribute("class", "betrag");
-    // betrag.textContent = `${(eintrag.get("betrag") / 100).toFixed(2).replace(".", ",")}€`;
-    betrag.textContent = `${(eintrag.get("betrag") / 100)
-      .toFixed(2)
-      .replace(/\./, ",")}€`;
-    titel.insertAdjacentElement("afterend", betrag);
-
-    // button
-    let button = document.createElement("button");
-    button.setAttribute("class", "entfernen-button");
-    betrag.insertAdjacentElement("afterend", button);
-
-    let icon = document.createElement("i");
-    icon.setAttribute("class", "fas fa-trash");
-    button.insertAdjacentElement("afterbegin", icon);
-
-    this._eintragEntfernenEventHinzufuegen(listenpunkt);
-
-    return listenpunkt;
-  }
-
-  _eintragEntfernenEventHinzufuegen(listenpunkt) {
-    listenpunkt
-      .querySelector(".entfernen-button")
-      .addEventListener("click", (e) => {
-        let timestamp = e.target.parentElement.getAttribute("data-timestamp");
-        // console.log(timestamp);
-
-        this._eintragEntfernen(timestamp);
-      });
   }
 
   _eintraegeAnzeigen() {
@@ -126,10 +76,7 @@ class Haushaltsbuch {
     // für jeden Eintrag einen HTML-Eintrag erstellen
     // HTML-Eintrag in <ul> einsetzen
     this._eintraege.forEach((eintrag) =>
-      eintragsliste.insertAdjacentElement(
-        "beforeend",
-        this._htmlEintragGenerieren(eintrag)
-      )
+      eintragsliste.insertAdjacentElement("beforeend", eintrag.html())
     );
     // <ul> in den article.monatsliste einsetzen
     const monatsliste = document.querySelector(".monatsliste");
@@ -149,32 +96,32 @@ class Haushaltsbuch {
 
     // als ArrowFunction geschrieben
     this._eintraege.forEach((eintrag) => {
-      switch (eintrag.get("typ")) {
+      switch (eintrag.typ()) {
         case "einnahme":
           neuegesamtbilanz.set(
             "einnahmen",
-            neuegesamtbilanz.get("einnahmen") + eintrag.get("betrag")
+            neuegesamtbilanz.get("einnahmen") + eintrag.betrag()
           );
           neuegesamtbilanz.set(
             "bilanz",
-            neuegesamtbilanz.get("bilanz") + eintrag.get("betrag")
+            neuegesamtbilanz.get("bilanz") + eintrag.betrag()
           );
           break;
         case "ausgabe":
           neuegesamtbilanz.set(
             "ausgaben",
-            neuegesamtbilanz.get("ausgaben") + eintrag.get("betrag")
+            neuegesamtbilanz.get("ausgaben") + eintrag.betrag()
           );
           neuegesamtbilanz.set(
             "bilanz",
-            neuegesamtbilanz.get("bilanz") - eintrag.get("betrag")
+            neuegesamtbilanz.get("bilanz") - eintrag.betrag()
           );
 
-          neuegesamtbilanz.ausgaben += eintrag.get("betrag");
-          neuegesamtbilanz.bilanz -= eintrag.get("betrag");
+          neuegesamtbilanz.ausgaben += eintrag.betrag();
+          neuegesamtbilanz.bilanz -= eintrag.betrag();
           break;
         default:
-          console.log(`Der Typ "${eintrag.get("typ")}" ist nicht bekannt.`);
+          console.log(`Der Typ "${eintrag.typ()}" ist nicht bekannt.`);
           break;
       }
     });
@@ -182,7 +129,7 @@ class Haushaltsbuch {
   }
 
   // anhand der aktuellen gesamtbilanz die gesamtbilanz neu generieren
-  _htmlgesamtbilanzGenerieren() {
+  _htmlGesamtbilanzGenerieren() {
     let gesamtbilanz = document.createElement("aside");
     gesamtbilanz.setAttribute("id", "gesamtbilanz");
 
@@ -247,6 +194,6 @@ class Haushaltsbuch {
     );
     document
       .querySelector("body")
-      .insertAdjacentElement("beforeend", this._htmlgesamtbilanzGenerieren());
+      .insertAdjacentElement("beforeend", this._htmlGesamtbilanzGenerieren());
   }
 }
